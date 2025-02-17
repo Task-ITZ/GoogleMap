@@ -9,6 +9,8 @@ activity = "1.10.0"
 constraintlayout = "2.2.0"
 playservicesmaps = "19.0.0"
 playserviceslocation = "21.3.0"
+places = "3.3.0"
+
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -20,6 +22,7 @@ activity = { group = "androidx.activity", name = "activity", version.ref = "acti
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 playservicesmaps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playservicesmaps" }
 playserviceslocation = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playserviceslocation" }
+places = { group = "com.google.android.libraries.places", name = "places", version.ref = "places" }
 
 
 [plugins]

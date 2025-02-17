@@ -42,4 +42,5 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation(libs.playservicesmaps)
     implementation(libs.playserviceslocation)
+    implementation(libs.places)
 }

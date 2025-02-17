@@ -3,16 +3,26 @@ package com.example.googleMap;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -23,22 +33,38 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PointOfInterest;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.PhotoMetadata;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPhotoRequest;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap gMap;
     private static int PERMISSION_REQUEST_CODE=12;
     private FusedLocationProviderClient fusedLocationProviderClient;
+    private Marker currentMarker;
+    private PlacesClient placesClient;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-
+        Places.initialize(getApplicationContext(), "AIzaSyCZbFUXnFOuho5pSs6rN-uNU_k6R7pocYA");
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         checkRuntimePermission();
@@ -66,11 +92,92 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(@NonNull GoogleMap googleMap) {
         gMap = googleMap;
 
+        gMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+            @Override
+            public View getInfoWindow(Marker marker) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                LinearLayout infoWindowLayout = new LinearLayout(MainActivity.this);
+                infoWindowLayout.setOrientation(LinearLayout.HORIZONTAL);
+
+                ImageView imageView = new ImageView(MainActivity.this);
+                imageView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                infoWindowLayout.addView(imageView);
+
+                if (marker.getTag() != null) {
+                    Bitmap imageBitmap = (Bitmap) marker.getTag();
+                    imageView.setImageBitmap(imageBitmap);
+                }
+
+                TextView title = new TextView(MainActivity.this);
+                title.setText(marker.getTitle());
+                title.setTextColor(Color.BLACK);
+                title.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT){{
+                    setMargins(10, 20, 0, 0);
+                }});
+                infoWindowLayout.addView(title);
+
+                return infoWindowLayout;
+            }
+        });
+
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             gMap.setMyLocationEnabled(true);
             getCurrentLocation();
+            gMap.setOnPoiClickListener(this::onPoiClick);
         }
     }
+
+    private void onPoiClick(PointOfInterest poi) {
+        Toast.makeText(this, "Bạn đã chọn: " + poi.name, Toast.LENGTH_SHORT).show();
+        placesClient = Places.createClient(this);
+        List<Place.Field> fields = Arrays.asList(Place.Field.NAME, Place.Field.PHOTO_METADATAS);
+        FetchPlaceRequest request = FetchPlaceRequest.builder(poi.placeId, fields).build();
+
+        placesClient.fetchPlace(request).addOnSuccessListener(response -> {
+            Place place = response.getPlace();
+
+            if (place != null) {
+                if (place.getPhotoMetadatas() != null && !place.getPhotoMetadatas().isEmpty()) {
+                    PhotoMetadata photoMetadata = place.getPhotoMetadatas().get(0);
+                    FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
+                            .setMaxWidth(500)
+                            .setMaxHeight(500)
+                            .build();
+
+                    placesClient.fetchPhoto(photoRequest).addOnSuccessListener(fetchPhotoResponse -> {
+                        Bitmap bitmap = fetchPhotoResponse.getBitmap();
+
+                        if (currentMarker != null) {
+                            currentMarker.remove();
+                        }
+                        MarkerOptions markerOptions = new MarkerOptions()
+                                .position(new LatLng(poi.latLng.latitude, poi.latLng.longitude))
+                                .title(poi.name);
+
+                        currentMarker = gMap.addMarker(markerOptions);
+                        currentMarker.setTag(bitmap);
+
+                        currentMarker.showInfoWindow();
+                    }).addOnFailureListener(exception -> {
+                        Toast.makeText(this, "Không thể lấy ảnh", Toast.LENGTH_SHORT).show();
+                    });
+                } else {
+                    Toast.makeText(this, "Không có ảnh cho địa điểm này", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, "Không thể lấy thông tin địa điểm", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(exception -> {
+            Toast.makeText(this, "Không thể lấy thông tin địa điểm", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+
 
     private void getCurrentLocation() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -87,4 +194,5 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             });
         }
     }
+
 }
