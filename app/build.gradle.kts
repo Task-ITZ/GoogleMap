@@ -29,6 +29,13 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
+    viewBinding {
+        enable = true
+    }
+    dataBinding {
+        enable = true
+    }
 }
 
 dependencies {
@@ -43,4 +50,6 @@ dependencies {
     implementation(libs.playservicesmaps)
     implementation(libs.playserviceslocation)
     implementation(libs.places)
+    implementation(libs.roomversion)
+    annotationProcessor(libs.roomcompiler)
 }

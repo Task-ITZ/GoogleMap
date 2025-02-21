@@ -7,9 +7,10 @@ appcompat = "1.7.0"
 material = "1.12.0"
 activity = "1.10.0"
 constraintlayout = "2.2.0"
-playservicesmaps = "19.0.0"
+playservicesmaps = "19.1.0"
 playserviceslocation = "21.3.0"
-places = "3.3.0"
+places = "4.1.0"
+roomversion = "2.6.1"
 
 
 [libraries]
@@ -23,6 +24,8 @@ constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayo
 playservicesmaps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playservicesmaps" }
 playserviceslocation = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playserviceslocation" }
 places = { group = "com.google.android.libraries.places", name = "places", version.ref = "places" }
+roomversion = { group = "androidx.room", name = "room-runtime", version.ref = "roomversion" }
+roomcompiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomversion" }
 
 
 [plugins]
