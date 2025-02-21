@@ -14,7 +14,6 @@ public class BookMarkViewModel extends BaseObservable {
     private String address;
     private String phoneNumber;
     private Bitmap image;
-    private Bookmark bookmark;
     private Context context;
 
     @Bindable
@@ -59,7 +58,7 @@ public class BookMarkViewModel extends BaseObservable {
 
     @Bindable
     public Bitmap getImage() {
-        return bookmark.getImage(context);
+        return image;
     }
 
     public void setImage(Bitmap image) {
