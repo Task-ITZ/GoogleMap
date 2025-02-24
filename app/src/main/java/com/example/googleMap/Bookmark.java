@@ -2,15 +2,10 @@ package com.example.googleMap;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-
 import java.io.File;
+import java.io.IOException;
 
 @Entity(tableName = "bookmarks")
 public class Bookmark{
@@ -46,18 +41,23 @@ public class Bookmark{
     }
 
     public Bitmap getImage(Context context) {
-        if (id == null) return null;
-        File imageFile = new File(context.getFilesDir(), generateFileName(id));
-        if (imageFile.exists()) {
-            return BitmapFactory.decodeFile(imageFile.getAbsolutePath());
+        if (id != null) {
+            return ImageUtils.loadBitmapFromFile(context, generateFileName(id));
         }
         return null;
+    }
+
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public static String generateFileName(Long id) {
         return "bookmark_" + id + ".png";
     }
-
+    public File createImageFile(Context context) throws IOException {
+        return ImageUtils.createUniqueImageFile(context);
+    }
     public void setPlaceId(String placeId) {
         this.placeId = placeId;
     }

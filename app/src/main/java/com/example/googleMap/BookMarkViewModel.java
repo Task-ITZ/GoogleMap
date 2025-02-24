@@ -1,12 +1,9 @@
 package com.example.googleMap;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
-
-import java.util.Observable;
 
 public class BookMarkViewModel extends BaseObservable {
     private String name;
@@ -14,7 +11,6 @@ public class BookMarkViewModel extends BaseObservable {
     private String address;
     private String phoneNumber;
     private Bitmap image;
-    private Context context;
 
     @Bindable
     public String getName() {
