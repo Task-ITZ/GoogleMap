@@ -1,4 +1,4 @@
-package com.example.googleMap;
+package com.example.googleMap.ui;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -28,6 +28,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import com.example.googleMap.IClickItemBookmarkListener;
+import com.example.googleMap.R;
+import com.example.googleMap.adapter.BookmarkListAdapter;
+import com.example.googleMap.model.Bookmark;
+import com.example.googleMap.repository.BookmarkRepository;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -61,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Bookmark bookmark;
     private BookmarkRepository bookmarkRepository;
     private DrawerLayout drawerLayout;
-    private BookmarkAdapter bookmarkAdapter;
+    private BookmarkListAdapter bookmarkListAdapter;
 
 
     @Override
@@ -242,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             if (bookmarks != null) {
                 gMap.clear();
 
-                bookmarkAdapter = new BookmarkAdapter(bookmarks, new IClickItemBookmarkListener() {
+                bookmarkListAdapter = new BookmarkListAdapter(bookmarks, new IClickItemBookmarkListener() {
                     @Override
                     public void onClickItemBookmark(Bookmark bookmark) {
                         Bitmap bitmap = bookmark.getImage(MainActivity.this);
@@ -261,7 +266,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }
                 });
 
-                recyclerView.setAdapter(bookmarkAdapter);
+                recyclerView.setAdapter(bookmarkListAdapter);
 
                 getCurrentLocation();
                 for (Bookmark bookmark : bookmarks) {

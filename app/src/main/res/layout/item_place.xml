@@ -7,7 +7,6 @@
     android:layout_marginTop="10dp"
     android:orientation="horizontal">
 
-    <!-- Icon nhà hàng -->
     <ImageView
         android:id="@+id/restaurant_icon"
         android:layout_width="40dp"

@@ -1,8 +1,12 @@
-package com.example.googleMap;
+package com.example.googleMap.repository;
 
 import android.app.Application;
 
 import androidx.lifecycle.LiveData;
+
+import com.example.googleMap.db.BookmarkDatabase;
+import com.example.googleMap.model.Bookmark;
+import com.example.googleMap.db.BookmarkDao;
 
 import java.util.List;
 

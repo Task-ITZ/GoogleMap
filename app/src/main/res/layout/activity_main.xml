@@ -6,14 +6,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".MainActivity">
+    tools:context=".ui.MainActivity">
 
-    <!-- Layout chính chứa AppBar và nội dung -->
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- AppBarLayout chứa Toolbar -->
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -33,7 +31,6 @@
 
         </com.google.android.material.appbar.AppBarLayout>
 
-        <!-- Nội dung chính (Bản đồ) -->
         <fragment
             android:id="@+id/id_map"
             android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -42,7 +39,6 @@
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    <!-- NavigationView cho menu bên trái -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/left_drawer"
         android:layout_width="250dp"

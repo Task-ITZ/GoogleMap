@@ -1,4 +1,4 @@
-package com.example.googleMap;
+package com.example.googleMap.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,15 +7,20 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.googleMap.model.Bookmark;
+import com.example.googleMap.IClickItemBookmarkListener;
+import com.example.googleMap.R;
+
 import java.util.List;
 
-public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHolder> {
+public class BookmarkListAdapter extends RecyclerView.Adapter<BookmarkListAdapter.ViewHolder> {
 
     private final List<Bookmark> bookmarkList;
     private IClickItemBookmarkListener iClickItemBookmarkListener;
 
 
-    public BookmarkAdapter(List<Bookmark> bookmarkList, IClickItemBookmarkListener iClickItemBookmarkListener) {
+    public BookmarkListAdapter(List<Bookmark> bookmarkList, IClickItemBookmarkListener iClickItemBookmarkListener) {
         this.bookmarkList = bookmarkList;
         this.iClickItemBookmarkListener = iClickItemBookmarkListener;
     }

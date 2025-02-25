@@ -3,7 +3,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.example.googleMap.BookMarkViewModel" />
+            type="com.example.googleMap.viewmodel.BookmarkViewModel.BookmarkView" />
     </data>
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -12,9 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        tools:context=".DetailActivity">
+        tools:context=".ui.DetailActivity">
 
-        <!-- Toolbar -->
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -32,8 +31,7 @@
                 android:id="@+id/imageview"
                 android:layout_width="match_parent"
                 android:layout_height="350dp"
-                android:onClick="onImageClick"
-                app:imageBitmap="@{viewModel.image}"/>
+                android:onClick="onImageClick"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -46,6 +44,7 @@
                     android:textSize="18sp"
                     android:text="Name"/>
                 <EditText
+                    android:id="@+id/edt_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@={viewModel.name}"/>
@@ -62,9 +61,10 @@
                     android:textSize="18sp"
                     android:text="Notes"/>
                 <EditText
+                    android:id="@+id/edt_note"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@={viewModel.note}"
+                    android:text="@={viewModel.notes}"
                     android:hint="Enter notes"/>
             </LinearLayout>
 
@@ -79,9 +79,10 @@
                     android:textSize="18sp"
                     android:text="Phone"/>
                 <EditText
+                    android:id="@+id/edt_phone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@={viewModel.phoneNumber}"/>
+                    android:text="@={viewModel.phone}"/>
             </LinearLayout>
 
             <LinearLayout
@@ -95,6 +96,7 @@
                     android:textSize="18sp"
                     android:text="Address"/>
                 <EditText
+                    android:id="@+id/edt_address"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@={viewModel.address}"/>

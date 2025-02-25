@@ -1,4 +1,4 @@
-package com.example.googleMap;
+package com.example.googleMap.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;

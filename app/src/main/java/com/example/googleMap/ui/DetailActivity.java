@@ -1,4 +1,4 @@
-package com.example.googleMap;
+package com.example.googleMap.ui;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -10,6 +10,7 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,17 +26,24 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.example.googleMap.R;
 import com.example.googleMap.databinding.ActivityDetailBinding;
+import com.example.googleMap.model.Bookmark;
+import com.example.googleMap.repository.BookmarkRepository;
+import com.example.googleMap.util.ImageUtils;
+import com.example.googleMap.viewmodel.BookmarkViewModel;
 
 import java.io.File;
 import java.io.IOException;
 
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity{
 
     private ActivityDetailBinding binding;
-    private BookMarkViewModel bookmarkViewModel;
+    private BookmarkViewModel bookmarkViewModel;
+    BookmarkViewModel.BookmarkView bookmarkView;
     private BookmarkRepository bookmarkRepository;
     private Bookmark bookmark;
     private static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -52,22 +60,31 @@ public class DetailActivity extends AppCompatActivity {
 
         Long bookmarkId = getIntent().getLongExtra("mark_id", -1);
 
+
         bookmarkRepository = new BookmarkRepository(getApplication());
-
-        bookmarkViewModel = new BookMarkViewModel();
-        binding.setViewModel(bookmarkViewModel);
-        binding.setLifecycleOwner(this);
-        bookmark = bookmarkRepository.getBookmark(bookmarkId);
-
-        bookmarkViewModel.setName(bookmark.getName());
-        bookmarkViewModel.setNote(bookmark.getNote());
-        bookmarkViewModel.setAddress(bookmark.getAddress());
-        bookmarkViewModel.setPhoneNumber(bookmark.getPhone());
-        bookmarkViewModel.setImage(bookmark.getImage(this));
-
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        bookmarkViewModel = new ViewModelProvider(this).get(BookmarkViewModel.class);
+
+        bookmarkViewModel.getBookmark(bookmarkId).observe(this, (it)-> {
+            bookmarkView = it;
+            binding.setViewModel(it);
+            populateImageView();
+        });
+
+    }
+
+    private void populateImageView() {
+        if (bookmarkView != null) {
+            Bitmap placeImage = bookmarkView.getImage(this);
+            if (placeImage != null) {
+                binding.imageview.setImageBitmap(placeImage);
+            }
+        }
+        binding.imageview.setOnClickListener(v->{
+            showImagePickerDialog();
+        });
     }
 
     @Override
@@ -76,18 +93,28 @@ public class DetailActivity extends AppCompatActivity {
         return true;
     }
 
+    private void saveChange() {
+        String name = binding.edtName.getText().toString();
+        if (name.isEmpty()) {
+            return;
+        }
+        if (bookmarkView != null) {
+            bookmarkView.name = binding.edtName.getText().toString();
+            bookmarkView.notes = binding.edtNote.getText().toString();
+            bookmarkView.address = binding.edtAddress.getText().toString();
+            bookmarkView.phone = binding.edtPhone.getText().toString();
+            bookmarkViewModel.updateBookmark(bookmarkView);
+        }
+        finish();
+    }
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        bookmark.setName(bookmarkViewModel.getName());
-        bookmark.setNote(bookmarkViewModel.getNote());
-        bookmark.setAddress(bookmarkViewModel.getAddress());
-        bookmark.setPhone(bookmarkViewModel.getPhoneNumber());
-        bookmark.setImage(bookmarkViewModel.getImage(), this);
+        if (item.getItemId() == R.id.action_tick) {
+            saveChange();
+            return true;
+        }
 
-        bookmarkRepository.updateBookmark(bookmark);
-        setResult(RESULT_OK);
-        finish();
-        return true;
+        return super.onOptionsItemSelected(item);
     }
 
     public void onImageClick(View view) {
@@ -128,7 +155,7 @@ public class DetailActivity extends AppCompatActivity {
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             photoFile = null;
             try {
-                photoFile = bookmark.createImageFile(this);
+                photoFile = ImageUtils.createUniqueImageFile(this);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -165,17 +192,24 @@ public class DetailActivity extends AppCompatActivity {
                     Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
                     bitmap = rotateImageIfRequired(bitmap, photoFile.getAbsolutePath());
                     bitmap = Bitmap.createScaledBitmap(bitmap, 500, 500, true);
-                    bookmarkViewModel.setImage(bitmap);
+                    updateImage(bitmap);
                 }
             } else if (requestCode == REQUEST_IMAGE_PICK && data != null) {
                 Uri imageUri = data.getData();
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-                    bookmarkViewModel.setImage(bitmap);
+                    updateImage(bitmap);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+
+    private void updateImage(Bitmap image) {
+        if (bookmarkView != null) {
+            binding.imageview.setImageBitmap(image);
+            bookmarkView.setImage(this,image);
         }
     }
 

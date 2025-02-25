@@ -1,10 +1,12 @@
-package com.example.googleMap;
+package com.example.googleMap.db;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
+
+import com.example.googleMap.model.Bookmark;
 
 import java.util.List;
 
